@@ -24,7 +24,7 @@
         </el-button>
       </div>
     </center>
-    <br />
+    <br>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import Pagination from "@/components/Pagination";
+import Pagination from '@/components/Pagination'
 
 export default {
   components: { Pagination },
@@ -82,18 +82,21 @@ export default {
         label: this.label
       },
       list: undefined
-    };
+    }
+  },
+  mounted: function() {
+    this.getList()
   },
   methods: {
     getList() {
-      this.listLoading = true;
-      console.log(this.label);
-      console.log(this.name);
+      this.listLoading = true
+      console.log(this.label)
+      console.log(this.name)
       this.$axios
         .post(
-          "http://localhost:8899/search/resource/" +
+          'http://localhost:8899/search/resource/' +
             this.base.page +
-            "/" +
+            '/' +
             this.base.limit,
           {
             name: this.name,
@@ -101,21 +104,17 @@ export default {
           }
         )
         .then(response => {
-          this.list = response.data.data.results;
-          this.total = parseInt(response.data.data.total);
-          console.log(this.list);
-          console.log(this.total);
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            console.log(this.list);
-            this.listLoading = false;
-          }, 1.5 * 1000);
-        });
+          this.list = response.data.data.results
+          this.total = parseInt(response.data.data.total)
+          console.log(this.list)
+          console.log(this.total)
+          this.listLoading = false
+        })
     },
 
     goTo(row) {
-      this.list[0].name = row.name;
+      this.list[0].name = row.name
     }
   }
-};
+}
 </script>
