@@ -12,7 +12,7 @@
     <el-form ref="form" :model="form" label-width="160px">
       <!--查询类型-->
       <el-form-item label="Query Type">
-        <el-select v-model="query_type" placeholder="please select the mode" @change="onCurrentType" style="width: 180px">
+        <el-select v-model="query_type" placeholder="Select Query Type" @change="onCurrentType" style="width: 180px">
           <el-option label="Single Node Query" value="one"/>
           <el-option label="Two-Node Query" value="two" />
         </el-select>
@@ -23,10 +23,10 @@
       <el-form-item label="Query Node">
         <el-col :span="8">
           <el-input 
-          placeholder="Node One" 
-          v-model="node1" 
-          class="input-with-select" 
-          style="width: 350px">
+            placeholder="Node One" 
+            v-model="node1" 
+            class="input-with-select" 
+            style="width: 350px">
             <el-select v-model="label1" slot="prepend" placeholder="Label" style='width: 100px'>
             <el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
@@ -35,6 +35,7 @@
             </el-select>
           </el-input>
         </el-col>
+
         <el-col :span="7">
           <el-input placeholder="Node Two" v-model="node2" class="input-with-select" style="width: 350px" v-bind:disabled="isdisabledTwo">
             <el-select v-model="label2" slot="prepend" placeholder="Label" style='width: 100px'>
@@ -45,6 +46,7 @@
             </el-select>
           </el-input>
         </el-col>
+
         <el-col :span="8">
           <el-button icon="el-icon-search" @click="search()" circle></el-button>
         </el-col>
@@ -54,8 +56,15 @@
         <el-switch
           v-model="direction"
           active-text="Bidirectional"
-          inactive-text="Unidirectional">
-        </el-switch>
+          inactive-text="Unidirectional"
+          active-value="0"
+          inactive-value="1"
+          v-bind:disabled="isdisabledTwo"
+          style="margin-right:40px"
+          ></el-switch>
+
+        <span style="font-size: 14px; color: #303133"><strong>Hop Limit：</strong></span>
+        <el-input v-model="num" size="medium" type="number" style="margin-left:5px; width: 80px" v-bind:disabled="isdisabledTwo"/>
 
       </el-form-item>
 
@@ -89,7 +98,8 @@ export default {
       label2:'',
       direction: true,
       query_type:'',
-      isdisabledTwo:false
+      isdisabledTwo:false,
+      num:1
     }
   },
 
@@ -156,4 +166,8 @@ export default {
   .input-with-select .el-input-group__prepend {
     background-color: #fff;
   }
+
+
+
 </style>
+
