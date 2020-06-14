@@ -4,7 +4,7 @@
       <div class="filter-container">
         <el-input
           v-model="name"
-          placeholder="Input predicate"
+          placeholder="Input resource"
           style="width: 200px;"
           class="filter-item"
         />
