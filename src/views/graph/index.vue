@@ -12,7 +12,7 @@
     <el-form ref="form" :model="form" label-width="160px">
       <!--查询类型-->
       <el-form-item label="Query Type">
-        <el-select v-model="query_type" placeholder="please select the mode" style="width: 250px">
+        <el-select v-model="query_type" placeholder="please select the mode" @change="onCurrentType" style="width: 180px">
           <el-option label="Single Node Query" value="one"/>
           <el-option label="Two-Node Query" value="two" />
         </el-select>
@@ -27,7 +27,7 @@
           v-model="node1" 
           class="input-with-select" 
           style="width: 350px">
-            <el-select v-model="label1" slot="prepend" placeholder="Label">
+            <el-select v-model="label1" slot="prepend" placeholder="Label" style='width: 100px'>
             <el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
             <el-option label="label2" value="2"></el-option>
@@ -36,8 +36,8 @@
           </el-input>
         </el-col>
         <el-col :span="7">
-          <el-input placeholder="Node Two" v-model="node2" class="input-with-select" style="width: 350px">
-            <el-select v-model="label2" slot="prepend" placeholder="Label">
+          <el-input placeholder="Node Two" v-model="node2" class="input-with-select" style="width: 350px" v-bind:disabled="isdisabledTwo">
+            <el-select v-model="label2" slot="prepend" placeholder="Label" style='width: 100px'>
             <el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
             <el-option label="label2" value="2"></el-option>
@@ -52,7 +52,7 @@
 
       <el-form-item label="Constraint">
         <el-switch
-          v-model="derection"
+          v-model="direction"
           active-text="Bidirectional"
           inactive-text="Unidirectional">
         </el-switch>
@@ -87,8 +87,9 @@ export default {
       node2: '',
       label1:'',
       label2:'',
-      derection: true,
-      query_type:''
+      direction: true,
+      query_type:'',
+      isdisabledTwo:false
     }
   },
 
@@ -102,11 +103,18 @@ export default {
         type: 'warning'
       })
     },
-    getShortestRoute(){},
+    onCurrentType(){
+      console.log("change type")
+      if(this.query_type == 'one'){
+        this.isdisabledTwo = true
+      }else{
+        this.isdisabledTwo = false
+      }
+    },
 
     search(){
       this.$message({
-        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.derection,
+        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction,
       })
 
       // 单节点查询
@@ -142,9 +150,9 @@ export default {
 </style>
 
 <style>
-  .el-select .el-input {
+  /*.el-select .el-input {
     width: 100px;
-  }
+  }*/
   .input-with-select .el-input-group__prepend {
     background-color: #fff;
   }
