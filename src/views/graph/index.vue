@@ -1,15 +1,7 @@
-<!--
-<template>
-  <div style="padding:30px;">
-    <el-alert :closable="false" title="这里做知识图谱的查询" type="success">
-      <router-view />
-    </el-alert>
-  </div>
-</template>
--->
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="160px">
+
       <!--查询类型-->
       <el-form-item label="Query Type">
       <el-col :span="8">
@@ -27,10 +19,6 @@
             class="input-with-select" 
             style="width: 350px">
             <el-select v-model="prep_label" slot="prepend" placeholder="Label" style='width: 100px'>
-            <!--<el-option label="default" value="0"></el-option>
-            <el-option label="label1" value="1"></el-option>
-            <el-option label="label2" value="2"></el-option>
-            <el-option label="label3" value="3"></el-option>-->
               <el-option v-for="item in prep_options"
                 :key="item.value"
                 :label="item.label"
@@ -39,8 +27,6 @@
             </el-select>
           </el-input>
         </el-col>
-        
-
 
       </el-form-item>
 
@@ -70,10 +56,6 @@
         <el-col :span="7">
           <el-input placeholder="Node Two" v-model="node2" class="input-with-select" style="width: 350px" v-bind:disabled="isdisabledTwo">
             <el-select v-model="label2" slot="prepend" filterable placeholder="Label" style='width: 100px'>
-           <!-- <el-option label="default" value="0"></el-option>
-            <el-option label="label1" value="1"></el-option>
-            <el-option label="label2" value="2"></el-option>
-            <el-option label="label3" value="3"></el-option>-->
              <el-option v-for="item in options"
                 :key="item.value"
                 :label="item.label"
@@ -88,8 +70,9 @@
         </el-col>
       </el-form-item>
 
-      <el-form-item label="Query Constraint">
+      <el-form-item label="Constraint">
         
+        <!--单双向限制-->
         <el-switch
           v-model="direction"
           active-text="Bidirectional"
@@ -100,13 +83,11 @@
           style="margin-right:40px"
           ></el-switch>
 
+        <!--跳数限制-->
         <span style="font-size: 14px; color: #303133"><strong>Hop Limit：</strong></span>
         <el-input v-model="num" size="medium" type="number" style="margin-left:5px; width: 80px" v-bind:disabled="isdisabledTwo"/>
 
       </el-form-item>
-
-
-
 
 
 
