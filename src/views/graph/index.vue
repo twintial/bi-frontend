@@ -101,9 +101,8 @@
 
       </el-form>
     </div>
-		<svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px">
-		</svg>
-	</div>
+    <svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px" />
+  </div>
 </template>
 
 <script>
@@ -117,7 +116,8 @@ export default {
   name: 'Graph',
   data() {
     return {
-      data: [],
+      nodes: [],
+      data: undefined,
       extendData: [],
       form: {
         name: '',
@@ -142,7 +142,7 @@ export default {
       prep_options: [],
 
       value: ''
-    };
+    }
   },
   mounted() {
     // 获取标签
@@ -179,16 +179,16 @@ export default {
       if (this.query_type === 'one') {
         searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
           linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
-            let data = JSON.parse(JSON.stringify(response.data))
-            this.data = data;
-            document.getElementById("graph").innerHTML = "";
-            try {
-              document.getElementById("graphLegend").remove();
-            }
-            catch {
-              console.log("no graphLegend")
-            }
-            this.drawGraph();
+          const data = JSON.parse(JSON.stringify(response.data))
+          this.data = response.data
+          this.nodes = data.nodes
+          document.getElementById('graph').innerHTML = ''
+          try {
+            document.getElementById('graphLegend').remove()
+          } catch {
+            console.log('no graphLegend')
+          }
+          this.drawGraph()
         })
 
       // 双节点查询
@@ -196,16 +196,15 @@ export default {
         searchTwo({ 'nodeName1': this.node1, 'nodeLabel1': this.label1, 'linkName': this.predicate,
           'linkLabel': this.prep_label, 'nodeName2': this.node2, 'nodeLabel2': this.label2,
           'isUnidirectional': this.direction, 'maxLinks': this.num }).then(res => {
-            let data = JSON.parse(JSON.stringify(res.data))
-            this.data = data;
-            document.getElementById("graph").innerHTML = "";
-            try {
-              document.getElementById("graphLegend").remove();
-            }
-            catch {
-              console.log("no graphLegend")
-            }
-            this.drawGraph();
+          const data = JSON.parse(JSON.stringify(res.data))
+          this.data = data
+          document.getElementById('graph').innerHTML = ''
+          try {
+            document.getElementById('graphLegend').remove()
+          } catch {
+            console.log('no graphLegend')
+          }
+          this.drawGraph()
         })
 
       // 未选择类型
@@ -219,233 +218,238 @@ export default {
 
     drag(simulation) {
       function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+        d.fx = d.x
+        d.fy = d.y
       }
 
       function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+        d.fx = d3.event.x
+        d.fy = d3.event.y
       }
 
       function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+        if (!d3.event.active) simulation.alphaTarget(0)
+        d.fx = null
+        d.fy = null
       }
 
       return d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended);
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended)
     },
 
     linkArc(d) {
-      const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y);
+      const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y)
       return `
         M${d.source.x},${d.source.y}
         A${r},${r} 0 0,1 ${d.target.x},${d.target.y}
-      `;
+      `
     },
 
     drawGraph() {
-      let data = this.data;
-      let links = data.links.map(d => Object.create(d));
-      let nodes = data.nodes.map(d => Object.create(d));
-      let types = Array.from(new Set(links.map(d => d.type)))
-      let color = d3.scaleOrdinal(types, d3.schemeCategory10)
-      let height = 100
-      let width = 300
-      let dom = document.getElementById("container")
+      const data = this.data
+      console.log(data)
+      const links = data.links.map(d => Object.create(d))
+      const nodes = data.nodes.map(d => Object.create(d))
+      const types = Array.from(new Set(links.map(d => d.type)))
+      const color = d3.scaleOrdinal(types, d3.schemeCategory10)
+      const height = 100
+      const width = 300
+      const dom = document.getElementById('container')
       console.log(links)
       console.log(nodes)
       console.log(types)
 
-      let legend = d3.select("#container")
-        .append("div")
-          .attr("class", "legendContainer clearfix")
-          .attr("id", "graphLegend")
-          .style("position", "absolute")
-          .style("text-align", "left")
-          .style("margin-left", "80px")
-          .style("top", "250px")
-        .selectAll(".legend")
+      const legend = d3.select('#container')
+        .append('div')
+        .attr('class', 'legendContainer clearfix')
+        .attr('id', 'graphLegend')
+        .style('position', 'absolute')
+        .style('text-align', 'left')
+        .style('margin-left', '80px')
+        .style('top', '250px')
+        .selectAll('.legend')
         .data(types)
         .enter()
-        .append("div")
-          .attr("class", "legend")
+        .append('div')
+        .attr('class', 'legend')
 
       const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id))
-        .force("charge", d3.forceManyBody().strength(-400))
-        .force("x", d3.forceX())
-        .force("y", d3.forceY());
+        .force('link', d3.forceLink(links).id(d => d.id))
+        .force('charge', d3.forceManyBody().strength(-400))
+        .force('x', d3.forceX())
+        .force('y', d3.forceY())
 
-      simulation.force("link")
-        .distance(function(d){
-            return 45;
+      simulation.force('link')
+        .distance(function(d) {
+          return 45
         })
 
-      const svg = d3.select("#graph")
-        .attr("viewBox", [-width / 2, -height / 2, width, height])
-        .style("font", "5px sans-serif");
+      const svg = d3.select('#graph')
+        .attr('viewBox', [-width / 2, -height / 2, width, height])
+        .style('font', '5px sans-serif')
 
-      const container = svg.append("g");
+      const container = svg.append('g')
 
-      container.append("defs").selectAll("marker")
+      container.append('defs').selectAll('marker')
         .data(types)
-        .join("marker")
-          .attr("id", d => `arrow-${d}`)
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 15)
-          .attr("refY", -0.5)
-          .attr("markerWidth", 8)
-          .attr("markerHeight", 8)
-          .attr("orient", "auto")
-        .append("path")
-          .attr("fill", color)
-          .attr("d", "M0,-5L10,0L0,5");
+        .join('marker')
+        .attr('id', d => `arrow-${d}`)
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 15)
+        .attr('refY', -0.5)
+        .attr('markerWidth', 8)
+        .attr('markerHeight', 8)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('fill', color)
+        .attr('d', 'M0,-5L10,0L0,5')
 
-      const link = container.append("g")
-          .attr("fill", "none")
-          .attr("stroke-width", 0.7)
-        .selectAll("path")
+      const link = container.append('g')
+        .attr('fill', 'none')
+        .attr('stroke-width', 0.7)
+        .selectAll('path')
         .data(links)
-        .join("path")
-          .attr("stroke", d => color(d.type))
-          .attr("id", function(d, i){return 'edgepath' + i;})
-          .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`)
+        .join('path')
+        .attr('stroke', d => color(d.type))
+        .attr('id', function(d, i) { return 'edgepath' + i })
+        .attr('marker-end', d => `url(${new URL(`#arrow-${d.type}`, location)})`)
 
-      legend.html(function (d, i) {
-        let colors = color(d)
+      legend.html(function(d, i) {
+        const colors = color(d)
         return `<div style="background: ${colors};width: 10px;height: 10px;display: inline-block;"></div><span> ${d}</span>`
       })
 
-      const pathlabels = container.selectAll(".pathLabel")
+      const pathlabels = container.selectAll('.pathLabel')
         .data(links)
         .enter()
-        .append("text")
-          .attr("x", 20);
+        .append('text')
+        .attr('x', 20)
 
-      pathlabels.append("title")
+      pathlabels.append('title')
         .text(d => {
-          let message = "Type: " + d.type + "\n" + "Label: " + d.label + "\n" + "URI: " + d.uri;
-          return message;
-      });
+          const message = 'Type: ' + d.type + '\n' + 'Label: ' + d.label + '\n' + 'URI: ' + d.uri
+          return message
+        })
 
-      pathlabels.on("click", (d) => {
-        window.open(d.uri);
-      });
+      pathlabels.on('click', (d) => {
+        window.open(d.uri)
+      })
 
-      pathlabels.append("textPath")
-        .attr("xlink:href",function(d, i) {return "#edgepath" + i})
-        .text(d => d.type);
+      pathlabels.append('textPath')
+        .attr('xlink:href', function(d, i) { return '#edgepath' + i })
+        .text(d => d.type)
 
-      const node = container.append("g")
-          .attr("fill", "currentColor")
-          .attr("stroke-linecap", "round")
-          .attr("stroke-linejoin", "round")
-        .selectAll("g")
+      const node = container.append('g')
+        .attr('fill', 'currentColor')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-linejoin', 'round')
+        .selectAll('g')
         .data(nodes)
-        .join("g")
-          .call(this.drag(simulation));
+        .join('g')
+        .call(this.drag(simulation))
 
-      node.append("title")
-          .text(d => {
-            let message = "Name: " + d.name + "\n" + "Label: " + d.label + "\n" + "URI: " + d.uri;
-            return message;
-          });
+      node.append('title')
+        .text(d => {
+          const message = 'Name: ' + d.name + '\n' + 'Label: ' + d.label + '\n' + 'URI: ' + d.uri
+          return message
+        })
 
-      node.append("circle")
-          .attr("stroke", "white")
-          .attr("stroke-width", 0)
-          .attr("r", 5);
+      node.append('circle')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 0)
+        .attr('r', 5)
 
-      node.on("click", (d) => {
-        this.redrawGraph(d.name);
-      });
+      node.on('click', (d) => {
+        this.redrawGraph(d.name)
+      })
 
-      const nodeText = node.append("text")
-          .attr("x", 8)
-          .attr("y", "0.31em")
-          .text(d => d.name)
+      const nodeText = node.append('text')
+        .attr('x', 8)
+        .attr('y', '0.31em')
+        .text(d => d.name)
         // .clone(true).lower()
         //   .attr("fill", "none")
         //   .attr("stroke", "white")
         //   .attr("stroke-width", 0);
 
-      nodeText.on("click", (d) => {
-        window.open(d.uri);
-      });
+      nodeText.on('click', (d) => {
+        window.open(d.uri)
+      })
 
-      simulation.on("tick", () => {
-        link.attr("d", this.linkArc);
-        node.attr("transform", d => `translate(${d.x},${d.y})`);
-      });
+      simulation.on('tick', () => {
+        link.attr('d', this.linkArc)
+        node.attr('transform', d => `translate(${d.x},${d.y})`)
+      })
 
-      let zoomHandler = d3.zoom()
+      const zoomHandler = d3.zoom()
         .scaleExtent([1 / 5, 2])
-        .on("zoom", () => {
-          container.attr("transform", d3.event.transform);
+        .on('zoom', () => {
+          container.attr('transform', d3.event.transform)
         })
 
-      svg.call(zoomHandler);
-      container.attr("transform", "translate(" + 0 + ',' + 0 + ")"+ " scale(" + 0.3 + ")");
+      svg.call(zoomHandler)
+      container.attr('transform', 'translate(' + 0 + ',' + 0 + ')' + ' scale(' + 0.3 + ')')
     },
 
     redrawGraph(nodeName) {
       axios.post('http://localhost:8899/basic/extend', qs.stringify({
-        "name": nodeName
+        'name': nodeName
       }))
-      .then(response => {
-        let data = response.data.data
-        console.log(data)
-        this.extendData = data;
-        this.data.links = this.processLink(this.data.links.concat(this.extendData.links));
-        this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes));
-        // console.log(this.data.links);
-        // console.log(this.data.nodes);
-        // this.data.links = this.data.links.push.apply(this.extendData.links)
-        // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
-        document.getElementById("graph").innerHTML = "";
-        document.getElementById("graphLegend").remove();
-        this.drawGraph();
+        .then(response => {
+          const data = response.data.data
+          console.log(JSON.parse(JSON.stringify(data)))
+          this.extendData = data
+          console.log(this.extendData)
+          this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+          this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+          // console.log(this.data.links);
+          // console.log(this.data.nodes);
+          // this.data.links = this.data.links.push.apply(this.extendData.links)
+          // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
+          document.getElementById('graph').innerHTML = ''
+          document.getElementById('graphLegend').remove()
+          console.log(this.data)
+          this.drawGraph()
         // setTimeout(this.drawGraph, 200);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
     },
-    
+
     processLink(array) {
-      let r = [];
+      const r = []
       console.log(array)
-      for(let i = 0; i < array.length; i++) {
-        for(let j = i + 1; j < array.length; j++)
+      for (let i = 0; i < array.length; i++) {
+        for (let j = i + 1; j < array.length; j++) {
           if (array[i].source.id == array[j].source.id) {
-            j = ++i;
+            j = ++i
             console.log(array[i].source.id, array[j].source.id)
           }
-        r.push(array[i]);
+        }
+        r.push(array[i])
       }
-      return r;
+      return r
     },
 
     processNode(array) {
-      let r = [];
-      for(let i = 0; i < array.length; i++) {
-        for(let j = i + 1; j < array.length; j++)
+      const r = []
+      for (let i = 0; i < array.length; i++) {
+        for (let j = i + 1; j < array.length; j++) {
           if (array[i].id == array[j].id) {
-            j = ++i;
+            j = ++i
             console.log(array[i].id)
           }
-        r.push(array[i]);
+        }
+        r.push(array[i])
       }
-      return r;
+      return r
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped>
