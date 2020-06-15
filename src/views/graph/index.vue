@@ -101,7 +101,7 @@
 
       </el-form>
     </div>
-		<svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+		<svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px">
 		</svg>
 	</div>
 </template>
@@ -110,19 +110,113 @@
 import * as d3 from 'd3'
 import qs from 'qs'
 import axios from 'axios'
+import { searchOne, searchTwo } from '@/api/search'
+import { getResource, getPredicate } from '@/api/label'
 
 export default {
   name: 'Graph',
   data() {
     return {
-      data: JSON.parse('{"nodes":[{"id":2233,"name":"Eastern_philosophy","uri":"http://dbpedia.org/resource/Eastern_philosophy","label":"Institution108053576"},{"id":2234,"name":"List_of_sovereign_states","uri":"http://dbpedia.org/resource/List_of_sovereign_states","label":"Thing"},{"id":365,"name":"Georgia_(country)","uri":"http://dbpedia.org/resource/Georgia_(country)","label":"populated place"},{"id":2232,"name":"Languages_of_Asia","uri":"http://dbpedia.org/resource/Languages_of_Asia","label":"grape"},{"id":2235,"name":"Dependent_territories","uri":"http://dbpedia.org/resource/Dependent_territories","label":"populated place"},{"id":169,"name":"Asia","uri":"http://dbpedia.org/resource/Asia","label":"continent"},{"id":2026,"name":"Kaymu","uri":"http://dbpedia.org/resource/Kaymu","label":"organisation"}],"links":[{"source":2026,"target":169,"type":"regionServed","uri":"http://dbpedia.org/ontology/regionServed","label":"Place"},{"source":169,"target":169,"type":"seeAlso","uri":"http://www.w3.org/2000/01/rdf-schema#seeAlso","label":"NULL"},{"source":169,"target":2235,"type":"seeAlso","uri":"http://www.w3.org/2000/01/rdf-schema#seeAlso","label":"NULL"},{"source":169,"target":2232,"type":"language","uri":"http://dbpedia.org/ontology/language","label":"Language"},{"source":169,"target":2234,"type":"seeAlso","uri":"http://www.w3.org/2000/01/rdf-schema#seeAlso","label":"NULL"},{"source":365,"target":169,"type":"seeAlso","uri":"http://www.w3.org/2000/01/rdf-schema#seeAlso","label":"NULL"},{"source":169,"target":2233,"type":"seeAlso","uri":"http://www.w3.org/2000/01/rdf-schema#seeAlso","label":"NULL"}]}'),
-      extendData: []
+      data: [],
+      extendData: [],
+      form: {
+        name: '',
+        region: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+
+      },
+      node1: '',
+      node2: '',
+      predicate: '',
+      label1: '',
+      label2: '',
+      prep_label: '',
+      direction: true,
+      query_type: '',
+      isdisabledTwo: false,
+      num: 1,
+      options: [],
+      prep_options: [],
+
+      value: ''
     };
   },
   mounted() {
-    this.drawGraph();
+    // 获取标签
+    getResource().then(res => {
+      console.log('load resource')
+      for (var item of res.data) {
+        this.options.push({ value: item, label: item })
+      }
+    })
+
+    getPredicate().then(res => {
+      console.log('load predicate label')
+      for (var item of res.data) {
+        this.prep_options.push({ value: item, label: item })
+      }
+    })
   },
   methods: {
+    onCurrentType() {
+      console.log('change type')
+      if (this.query_type === 'one') {
+        this.isdisabledTwo = true
+      } else {
+        this.isdisabledTwo = false
+      }
+    },
+
+    search() {
+      this.$message({
+        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction
+      })
+
+      // 单节点查询
+      if (this.query_type === 'one') {
+        searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
+          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+            let data = JSON.parse(JSON.stringify(response.data))
+            this.data = data;
+            document.getElementById("graph").innerHTML = "";
+            try {
+              document.getElementById("graphLegend").remove();
+            }
+            catch {
+              console.log("no graphLegend")
+            }
+            this.drawGraph();
+        })
+
+      // 双节点查询
+      } else if (this.query_type === 'two') {
+        searchTwo({ 'nodeName1': this.node1, 'nodeLabel1': this.label1, 'linkName': this.predicate,
+          'linkLabel': this.prep_label, 'nodeName2': this.node2, 'nodeLabel2': this.label2,
+          'isUnidirectional': this.direction, 'maxLinks': this.num }).then(res => {
+            let data = JSON.parse(JSON.stringify(res.data))
+            this.data = data;
+            document.getElementById("graph").innerHTML = "";
+            try {
+              document.getElementById("graphLegend").remove();
+            }
+            catch {
+              console.log("no graphLegend")
+            }
+            this.drawGraph();
+        })
+
+      // 未选择类型
+      } else {
+        this.$message({
+          message: 'Select the query type, please!',
+          type: 'warning'
+        })
+      }
+    },
+
     drag(simulation) {
       function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -146,6 +240,7 @@ export default {
           .on("drag", dragged)
           .on("end", dragended);
     },
+
     linkArc(d) {
       const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y);
       return `
@@ -153,6 +248,7 @@ export default {
         A${r},${r} 0 0,1 ${d.target.x},${d.target.y}
       `;
     },
+
     drawGraph() {
       let data = this.data;
       let links = data.links.map(d => Object.create(d));
@@ -172,8 +268,8 @@ export default {
           .attr("id", "graphLegend")
           .style("position", "absolute")
           .style("text-align", "left")
-          .style("margin-left", "50px")
-          .style("top", "50px")
+          .style("margin-left", "80px")
+          .style("top", "250px")
         .selectAll(".legend")
         .data(types)
         .enter()
@@ -297,20 +393,21 @@ export default {
       svg.call(zoomHandler);
       container.attr("transform", "translate(" + 0 + ',' + 0 + ")"+ " scale(" + 0.3 + ")");
     },
+
     redrawGraph(nodeName) {
       axios.post('http://localhost:8899/basic/extend', qs.stringify({
         "name": nodeName
       }))
       .then(response => {
-        let data = JSON.parse(JSON.stringify(response.data.data))
+        let data = response.data.data
+        console.log(data)
         this.extendData = data;
-        // console.log(this.extendData);
-        // this.data.links = this.processLink(this.extendData.links.concat(this.data.links));
-        // this.data.nodes = this.processNode(this.extendData.nodes.concat(this.data.nodes));
+        this.data.links = this.processLink(this.data.links.concat(this.extendData.links));
+        this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes));
         // console.log(this.data.links);
         // console.log(this.data.nodes);
-        this.data.links = this.extendData.links;
-        this.data.nodes = this.extendData.nodes;
+        // this.data.links = this.data.links.push.apply(this.extendData.links)
+        // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
         document.getElementById("graph").innerHTML = "";
         document.getElementById("graphLegend").remove();
         this.drawGraph();
@@ -320,144 +417,35 @@ export default {
         console.log(error);
       });
     },
+    
     processLink(array) {
       let r = [];
-      let map = [];
-      for (let x = 0; x < array.length; x++){
-        map.push(-1);
-      }
-      for (let i = 0; i < array.length; i++) {
-        if (map[i] == 0){
-          continue;
-        }
-        if (map[i] == -1) {
-          map[i] = 1;
-        }
-        for (let j = i + 1; j < array.length; j++) {
-          if ((array[i].source.index == array[j].source.index) && (array[i].target.index == array[j].target.index)) {
-            map[j] = 0;
+      console.log(array)
+      for(let i = 0; i < array.length; i++) {
+        for(let j = i + 1; j < array.length; j++)
+          if (array[i].source.id == array[j].source.id) {
+            j = ++i;
+            console.log(array[i].source.id, array[j].source.id)
           }
-        }
+        r.push(array[i]);
       }
-      for (let y = 0; y < map.length; y++) {
-        if (map[y] == 1){
-          r.push(array[y]);
-        }
-      }
-      r.splice(0, 1);
       return r;
     },
+
     processNode(array) {
       let r = [];
       for(let i = 0; i < array.length; i++) {
         for(let j = i + 1; j < array.length; j++)
-          if (array[i].id == array[j].id) j = ++i;
+          if (array[i].id == array[j].id) {
+            j = ++i;
+            console.log(array[i].id)
+          }
         r.push(array[i]);
       }
       return r;
     }
   },
 };
-</script>
-
-<script>
-import { searchOne, searchTwo } from '@/api/search'
-import { getResource, getPredicate } from '@/api/label'
-
-export default {
-  data() {
-    return {
-      form: {
-        name: '',
-        region: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-
-      },
-      node1: '',
-      node2: '',
-      predicate: '',
-      label1: '',
-      label2: '',
-      prep_label: '',
-      direction: true,
-      query_type: '',
-      isdisabledTwo: false,
-      num: 1,
-      options: [],
-      prep_options: [],
-
-      value: ''
-    }
-  },
-
-  mounted() {
-    console.log('mounted')
-
-    // 获取标签
-    getResource().then(res => {
-      console.log('load resource')
-      for (var item of res.data) {
-        this.options.push({ value: item, label: item })
-      }
-    })
-
-    getPredicate().then(res => {
-      console.log('load predicate label')
-      for (var item of res.data) {
-        this.prep_options.push({ value: item, label: item })
-      }
-    })
-  },
-
-  methods: {
-
-    onCurrentType() {
-      console.log('change type')
-      if (this.query_type === 'one') {
-        this.isdisabledTwo = true
-      } else {
-        this.isdisabledTwo = false
-      }
-    },
-
-    search() {
-      this.$message({
-        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction
-      })
-
-      // 单节点查询
-      if (this.query_type === 'one') {
-        console.log(1)
-        console.log({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
-          linkLabel: this.prep_label, isUnidirectional: this.direction })
-
-        searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
-          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
-          console.log(response)
-        })
-
-      // 双节点查询
-      } else if (this.query_type === 'two') {
-        console.log(2)
-        searchTwo({ 'nodeName1': this.node1, 'nodeLabel1': this.label1, 'linkName': this.predicate,
-          'linkLabel': this.prep_label, 'nodeName2': this.node2, 'nodeLabel2': this.label2,
-          'isUnidirectional': this.direction, 'maxLinks': this.num }).then(res => {
-          console.log(res)
-        })
-
-      // 未选择类型
-      } else {
-        this.$message({
-          message: 'Select the query type, please!',
-          type: 'warning'
-        })
-      }
-    }
-  }
-}
 </script>
 
 <style scoped>
