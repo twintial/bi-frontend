@@ -12,10 +12,36 @@
     <el-form ref="form" :model="form" label-width="160px">
       <!--查询类型-->
       <el-form-item label="Query Type">
-        <el-select v-model="query_type" placeholder="Select Query Type" @change="onCurrentType" style="width: 180px">
+      <el-col :span="8">
+        <el-select v-model="query_type" placeholder="Select Query Type" @change="onCurrentType" style="width: 200px">
           <el-option label="Single Node Query" value="one"/>
           <el-option label="Two-Node Query" value="two" />
         </el-select>
+        </el-col>
+
+        <!--谓语限制-->
+        <el-col :span="8">
+          <el-input 
+            placeholder="Predicate Limit" 
+            v-model="predicate" 
+            class="input-with-select" 
+            style="width: 350px">
+            <el-select v-model="prep_label" slot="prepend" placeholder="Label" style='width: 100px'>
+            <!--<el-option label="default" value="0"></el-option>
+            <el-option label="label1" value="1"></el-option>
+            <el-option label="label2" value="2"></el-option>
+            <el-option label="label3" value="3"></el-option>-->
+              <el-option v-for="item in prep_options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-input>
+        </el-col>
+        
+
+
       </el-form-item>
 
 
@@ -28,21 +54,31 @@
             class="input-with-select" 
             style="width: 350px">
             <el-select v-model="label1" slot="prepend" placeholder="Label" style='width: 100px'>
-            <el-option label="default" value="0"></el-option>
+            <!--<el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
             <el-option label="label2" value="2"></el-option>
-            <el-option label="label3" value="3"></el-option>
+            <el-option label="label3" value="3"></el-option>-->
+              <el-option v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
             </el-select>
           </el-input>
         </el-col>
 
         <el-col :span="7">
           <el-input placeholder="Node Two" v-model="node2" class="input-with-select" style="width: 350px" v-bind:disabled="isdisabledTwo">
-            <el-select v-model="label2" slot="prepend" placeholder="Label" style='width: 100px'>
-            <el-option label="default" value="0"></el-option>
+            <el-select v-model="label2" slot="prepend" filterable placeholder="Label" style='width: 100px'>
+           <!-- <el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
             <el-option label="label2" value="2"></el-option>
-            <el-option label="label3" value="3"></el-option>
+            <el-option label="label3" value="3"></el-option>-->
+             <el-option v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
             </el-select>
           </el-input>
         </el-col>
@@ -52,7 +88,8 @@
         </el-col>
       </el-form-item>
 
-      <el-form-item label="Constraint">
+      <el-form-item label="Query Constraint">
+        
         <el-switch
           v-model="direction"
           active-text="Bidirectional"
@@ -67,6 +104,8 @@
         <el-input v-model="num" size="medium" type="number" style="margin-left:5px; width: 80px" v-bind:disabled="isdisabledTwo"/>
 
       </el-form-item>
+
+
 
 
 
@@ -89,18 +128,56 @@ export default {
         type: [],
         resource: '',
         desc: '',
-        
-      
+             
       },
       node1:'',
       node2: '',
+      predicate:'',
       label1:'',
       label2:'',
+      prep_label:'',
       direction: true,
       query_type:'',
       isdisabledTwo:false,
-      num:1
+      num:1,
+      options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+
+      prep_options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+
+      value: ''
     }
+      
+
   },
 
   methods: {
