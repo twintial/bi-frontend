@@ -135,6 +135,26 @@ export default {
     }
   },
 
+  created(){
+    console.log("create", this.$route)
+    if(this.$route.params.length === 0){
+      return
+    }
+    if(this.$route.params.node){
+      console.log("jump node", this.$route.params.node)
+      this.query_type = 'one'
+      this.node1 = this.$route.params.node
+      this.direction = true
+      searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
+          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+          console.log(response)
+        })
+
+    }else if(this.$route.predicate){
+      console.log("jump predicate")
+    }
+  },
+
   mounted() {
     console.log('mounted')
 
