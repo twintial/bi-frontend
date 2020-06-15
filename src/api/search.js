@@ -1,29 +1,23 @@
 import request from '@/utils/request'
 
-export function getList(params) {
-  return request({
-    url: '/vue-admin-template/table/list',
-    method: 'get',
-    params
-  })
-}
-
 export function searchOne(data) {
   return request({
-    url: 'http://localhost:8899/basic/one?name=' + data,
+    url: '/basic/one',
     method: 'post',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    data: JSON.stringify(data)
   })
 }
 
 export function searchTwo(data) {
   return request({
-    url: 'http://localhost:8899/basic/two?name1=' + data.node1 + '&name2=' + data.node2 + '&nLinks=' + data.nlinks,
+    url: '/basic/two',
     method: 'post',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    data: JSON.stringify(data)
   })
 }
