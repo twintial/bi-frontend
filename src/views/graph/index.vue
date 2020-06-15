@@ -24,10 +24,11 @@
             v-model="node1"
             placeholder="Node One"
             class="input-with-select"
-            style="width: 350px">
+            style="width: 350px"
+          >
             <el-select v-model="label1" slot="prepend" placeholder="Label" style="width: 100px">
-              <el-option label="default" value="0"></el-option>
-              <el-option label="label1" value="1"></el-option>
+              <el-option label="default" value="0"/>
+              <el-option label="label1" value="1"/>
               <el-option label="label2" value="2"></el-option>
               <el-option label="label3" value="3"></el-option>
             </el-select>
