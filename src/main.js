@@ -1,5 +1,6 @@
 import Vue from 'vue'
-
+import axios from 'axios'
+Vue.prototype.$axios = axios
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
