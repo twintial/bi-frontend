@@ -119,13 +119,14 @@ export default {
         desc: ''
 
       },
+      test: true,
       node1: '',
       node2: '',
       predicate: '',
       label1: '',
       label2: '',
       prep_label: '',
-      direction: true,
+      direction: "false",
       query_type: '',
       isdisabledTwo: false,
       num: 1,
@@ -146,7 +147,7 @@ export default {
       console.log("jump node", this.$route.params.node)
       this.query_type = 'one'
       this.node1 = this.$route.params.node
-      this.direction = true
+      this.direction = "false"
       searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
           linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
           console.log(response)
@@ -157,7 +158,7 @@ export default {
       console.log("jump predicate", this.$route.params.predicate)
       this.query_type = 'one'
       this.predicate = this.$route.params.predicate
-      this.direction = true
+      this.direction = "false"
       searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
           linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
           console.log(response)
