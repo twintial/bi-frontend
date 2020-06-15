@@ -383,7 +383,7 @@ export default {
       prep_label: '',
       direction: "false",
       query_type: '',
-      isdisabledTwo: false,
+      isdisabledTwo: true,
       num: 1,
       options: [],
       prep_options: [],
