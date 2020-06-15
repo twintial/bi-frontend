@@ -35,7 +35,8 @@
     >
       <el-table-column label="Name" min-width="300px" align="center">
         <template slot-scope="{ row }">
-          <a class="link-type" @click="goTo(row)">{{ row.name }}</a>
+          <!--<a class="link-type" @click="goTo(row)">{{ row.name }}</a>-->
+          <router-link :to="{ name: 'Graph', params:{ predicate: row.name}}">{{ row.name }}</router-link>
         </template>
       </el-table-column>
       <el-table-column label="Label" min-width="300px" align="center">

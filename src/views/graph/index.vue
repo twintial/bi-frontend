@@ -32,7 +32,7 @@
 
       </el-form-item>
 
-      <!--查询节点-->
+      <!--查询节点1-->
       <el-form-item label="Query Node">
         <el-col :span="8">
           <el-input
@@ -56,6 +56,7 @@
           </el-input>
         </el-col>
 
+        <!--查询节点2-->
         <el-col :span="7">
           <el-input v-model="node2" placeholder="Node Two" class="input-with-select" style="width: 350px" :disabled="isdisabledTwo">
             <el-select slot="prepend" v-model="label2" filterable placeholder="Label" style="width: 100px">
@@ -140,6 +141,7 @@ export default {
     if(this.$route.params.length === 0){
       return
     }
+    // 由 resource 搜索界面跳转而来
     if(this.$route.params.node){
       console.log("jump node", this.$route.params.node)
       this.query_type = 'one'
@@ -150,15 +152,23 @@ export default {
           console.log(response)
         })
 
-    }else if(this.$route.predicate){
-      console.log("jump predicate")
+    // 由 predicate 搜索界面跳转而来
+    }else if(this.$route.params.predicate){
+      console.log("jump predicate", this.$route.params.predicate)
+      this.query_type = 'one'
+      this.predicate = this.$route.params.predicate
+      this.direction = true
+      searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
+          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+          console.log(response)
+        })
     }
   },
 
   mounted() {
     console.log('mounted')
 
-    // 获取标签
+    // 获取名词标签
     getResource().then(res => {
       console.log('load resource')
       for (var item of res.data) {
@@ -166,6 +176,7 @@ export default {
       }
     })
 
+    // 获取谓语标签
     getPredicate().then(res => {
       console.log('load predicate label')
       for (var item of res.data) {
@@ -185,10 +196,13 @@ export default {
       }
     },
 
+   // 搜索图节点
     search() {
+    /*
       this.$message({
-        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction
+        message: 
       })
+    */
 
       // 单节点查询
       if (this.query_type === 'one') {
