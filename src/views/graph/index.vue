@@ -70,7 +70,7 @@
             </el-input>
           </el-col>
 
-          <el-col :span="10">
+          <el-col :span="6" style="margin-left: 60px">
             <el-button icon="el-icon-search" circle @click="search()" />
           </el-col>
         </el-form-item>
@@ -273,8 +273,8 @@ export default {
         .attr('id', 'graphLegend')
         .style('position', 'absolute')
         .style('text-align', 'left')
-        .style('margin-left', '80px')
-        .style('top', '250px')
+        .style('margin-left', '95px')
+        .style('top', '25px')
         .selectAll('.legend')
         .data(types)
         .enter()
