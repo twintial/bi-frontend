@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="160px">
-
       <!--查询类型-->
       <el-form-item label="Query Type">
         <el-col :span="8">
@@ -200,7 +199,7 @@ export default {
     search() {
     /*
       this.$message({
-        message: 
+        message:
       })
     */
 
