@@ -18,7 +18,7 @@
             v-model="predicate" 
             class="input-with-select" 
             style="width: 350px">
-            <el-select v-model="prep_label" slot="prepend" placeholder="Label" style='width: 100px'>
+            <el-select v-model="prep_label" slot="prepend" filterable placeholder="Label" style='width: 100px'>
               <el-option v-for="item in prep_options"
                 :key="item.value"
                 :label="item.label"
@@ -39,7 +39,7 @@
             v-model="node1" 
             class="input-with-select" 
             style="width: 350px">
-            <el-select v-model="label1" slot="prepend" placeholder="Label" style='width: 100px'>
+            <el-select v-model="label1" slot="prepend" filterable placeholder="Label" style='width: 100px'>
             <!--<el-option label="default" value="0"></el-option>
             <el-option label="label1" value="1"></el-option>
             <el-option label="label2" value="2"></el-option>
