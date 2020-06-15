@@ -1,5 +1,5 @@
 <template>
-  <div id="container" style="text-align: center; position:relative;">
+  <div>
     <div class="app-container">
       <el-form ref="form" :model="form" label-width="160px">
 
@@ -70,7 +70,7 @@
             </el-input>
           </el-col>
 
-          <el-col :span="8">
+          <el-col :span="10">
             <el-button icon="el-icon-search" circle @click="search()" />
           </el-col>
         </el-form-item>
@@ -101,7 +101,9 @@
 
       </el-form>
     </div>
-    <svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px" />
+    <div id="container" style="text-align: center; position:relative;">
+      <svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px" />
+    </div>
   </div>
 </template>
 
@@ -179,6 +181,7 @@ export default {
       if (this.query_type === 'one') {
         searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
           linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+          console.log(response.data)
           const data = JSON.parse(JSON.stringify(response.data))
           this.data = response.data
           this.nodes = data.nodes
@@ -249,8 +252,10 @@ export default {
     },
 
     drawGraph() {
-      const data = this.data
+      const data = JSON.parse(JSON.stringify(this.data))
       console.log(data)
+      console.log(this.data)
+
       const links = data.links.map(d => Object.create(d))
       const nodes = data.nodes.map(d => Object.create(d))
       const types = Array.from(new Set(links.map(d => d.type)))
@@ -400,13 +405,17 @@ export default {
       }))
         .then(response => {
           const data = response.data.data
-          console.log(JSON.parse(JSON.stringify(data)))
+          // console.log(JSON.parse(JSON.stringify(data)))
           this.extendData = data
+          // console.log(this.extendData)
           console.log(this.extendData)
-          this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
-          this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
-          // console.log(this.data.links);
-          // console.log(this.data.nodes);
+          console.log(this.data)
+          this.mergeTwoData(this.data, this.extendData)
+
+          // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+          // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+          // console.log(this.data.links)
+          // console.log(this.data.nodes)
           // this.data.links = this.data.links.push.apply(this.extendData.links)
           // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
           document.getElementById('graph').innerHTML = ''
@@ -420,14 +429,36 @@ export default {
         })
     },
 
+    mergeTwoData(data1, data2) {
+      data1.links = data1.links.concat(data2.links.filter(
+        function(v) {
+          for (let i = 0; i < data1.links.length; i++) {
+            if (data1.links[i].source === v.source && data1.links[i].target === v.target) {
+              // 过滤
+              return false
+            }
+          }
+          return true
+        }))
+      data1.nodes = data1.nodes.concat(data2.nodes.filter(
+        function(v) {
+          for (let i = 0; i < data1.nodes.length; i++) {
+            if (data1.nodes[i].id === v.id) {
+              return false
+            }
+          }
+          return true
+        }))
+    },
+
     processLink(array) {
       const r = []
       console.log(array)
       for (let i = 0; i < array.length; i++) {
         for (let j = i + 1; j < array.length; j++) {
-          if (array[i].source.id == array[j].source.id) {
+          if (array[i].source === array[j].source) {
             j = ++i
-            console.log(array[i].source.id, array[j].source.id)
+            // console.log(array[i].source.id, array[j].source.id)
           }
         }
         r.push(array[i])
@@ -439,7 +470,7 @@ export default {
       const r = []
       for (let i = 0; i < array.length; i++) {
         for (let j = i + 1; j < array.length; j++) {
-          if (array[i].id == array[j].id) {
+          if (array[i].id === array[j].id) {
             j = ++i
             console.log(array[i].id)
           }
