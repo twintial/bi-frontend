@@ -77,15 +77,16 @@
           v-model="direction"
           active-text="Bidirectional"
           inactive-text="Unidirectional"
-          active-value="0"
-          inactive-value="1"
-          v-bind:disabled="isdisabledTwo"
+          active-value=false
+          inactive-value=true
           style="margin-right:40px"
           ></el-switch>
 
         <!--跳数限制-->
         <span style="font-size: 14px; color: #303133"><strong>Hop Limit：</strong></span>
-        <el-input v-model="num" size="medium" type="number" style="margin-left:5px; width: 80px" v-bind:disabled="isdisabledTwo"/>
+        <el-input v-model="num" size="medium" type="number" 
+        style="margin-left:5px; width: 80px" 
+        v-bind:disabled="isdisabledTwo"/>
 
       </el-form-item>
 
@@ -98,6 +99,8 @@
 
 <script>
 import { searchOne, searchTwo } from '@/api/search'
+import { getResource, getPredicate } from '@/api/label'
+import { compile } from 'path-to-regexp'
 
 export default {
   data() {
@@ -109,7 +112,7 @@ export default {
         type: [],
         resource: '',
         desc: '',
-             
+           
       },
       node1:'',
       node2: '',
@@ -121,56 +124,35 @@ export default {
       query_type:'',
       isdisabledTwo:false,
       num:1,
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-
-      prep_options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
+      options: [],
+      prep_options: [],
 
       value: ''
     }
-      
+  },
+
+  mounted(){
+    console.log("mounted")
+
+    // 获取标签
+    getResource().then( res =>{
+      console.log("load resource")
+      for(var item of res.data){
+        this.options.push({value:item, label:item})
+      }
+    }),
+
+    getPredicate().then( res =>{
+      console.log("load predicate label")
+      for(var item of res.data){
+        this.prep_options.push({value:item, label:item})
+      }
+    })
 
   },
 
   methods: {
-    onSubmit() {
-      this.$message('submit!')
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
-    },
+
     onCurrentType(){
       console.log("change type")
       if(this.query_type == 'one'){
@@ -188,15 +170,21 @@ export default {
       // 单节点查询
       if(this.query_type == 'one'){
         console.log(1)
-        searchOne(this.node1).then( response => {
+        console.log({nodeName:this.node1, nodeLabel: this.label1, linkName: this.predicate, 
+                   linkLabel:this.prep_label, isUnidirectional: this.direction})
+
+        searchOne({nodeName:this.node1, nodeLabel: this.label1, linkName: this.predicate, 
+                   linkLabel:this.prep_label, isUnidirectional: this.direction}).then( response => {
           console.log(response)
         })
 
       // 双节点查询
       }else if (this.query_type == 'two'){
         console.log(2)
-        searchTwo({node1:this.node1, node2:this.node2, nlinks:1}).then( response => {
-          console.log(response)
+        searchTwo({"nodeName1":this.node1, "nodeLabel1": this.label1, "linkName": this.predicate, 
+                   "linkLabel":this.prep_label, "nodeName2": this.node2, "nodeLabel2":this.label2, 
+                   "isUnidirectional": this.direction, "maxLinks":this.num}).then( res => {
+          console.log(res)
         })
 
       // 未选择类型
