@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import * as d3 from 'd3'
 import { searchOne, searchTwo } from '@/api/search'
 import { getResource, getPredicate } from '@/api/label'
 
