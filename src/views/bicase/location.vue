@@ -73,11 +73,7 @@ export default {
           calculable: true,
           color: ['orangered', 'yellow', 'lightskyblue']
         },
-        tooltip: {
-          formatter: function(params) {
-            return params.data.name + ': ' + params.data.value
-          }
-        },
+        tooltip: {},
         geo: {
           map: 'world',
           label: {
