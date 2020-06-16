@@ -78,13 +78,19 @@ export const constantRoutes = [
       name: 'BICase',
       component: () => import('@/views/bicase/location'),
       meta: { title: 'Location', icon: 'skill' }
+    },
+    {
+      path: 'analysis',
+      name: 'BICase',
+      component: () => import('@/views/bicase/analysis'),
+      meta: { title: 'Analysis', icon: 'dashboard' }
     }]
   },
-  // {
-  //   path: '/login',
-  //   component: () => import('@/views/login/index'),
-  //   hidden: true
-  // },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
 
   {
     path: '/404',

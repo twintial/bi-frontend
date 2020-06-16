@@ -73,7 +73,8 @@ export default {
           calculable: true,
           color: ['orangered', 'yellow', 'lightskyblue']
         },
-        tooltip: {},
+        tooltip: {
+        },
         geo: {
           map: 'world',
           label: {

@@ -70,7 +70,7 @@
             </el-input>
           </el-col>
 
-          <el-col :span="10">
+          <el-col :span="6" style="margin-left: 60px">
             <el-button icon="el-icon-search" circle @click="search()" />
           </el-col>
         </el-form-item>
@@ -102,7 +102,7 @@
       </el-form>
     </div>
     <div id="container" style="text-align: center; position:relative;">
-      <svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1350px;height: 450px" />
+      <svg id="graph" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width: 1200px;height: 450px" />
     </div>
   </div>
 </template>
@@ -111,7 +111,7 @@
 import * as d3 from 'd3'
 import qs from 'qs'
 import axios from 'axios'
-import { searchOne, searchTwo } from '@/api/search'
+import { searchOne, searchTwo, extend } from '@/api/search'
 import { getResource, getPredicate } from '@/api/label'
 
 export default {
@@ -339,8 +339,8 @@ export default {
         .attr('id', 'graphLegend')
         .style('position', 'absolute')
         .style('text-align', 'left')
-        .style('margin-left', '80px')
-        .style('top', '250px')
+        .style('margin-left', '95px')
+        .style('top', '25px')
         .selectAll('.legend')
         .data(types)
         .enter()
@@ -466,33 +466,54 @@ export default {
     },
 
     redrawGraph(nodeName) {
-      axios.post('http://localhost:8899/basic/extend', qs.stringify({
-        'name': nodeName
-      }))
-        .then(response => {
-          const data = response.data.data
-          // console.log(JSON.parse(JSON.stringify(data)))
-          this.extendData = data
-          // console.log(this.extendData)
-          console.log(this.extendData)
-          console.log(this.data)
-          this.mergeTwoData(this.data, this.extendData)
+      extend(nodeName).then(response => {
+        const data = response.data
+        // console.log(JSON.parse(JSON.stringify(data)))
+        this.extendData = data
+        // console.log(this.extendData)
+        console.log(this.extendData)
+        console.log(this.data)
+        this.mergeTwoData(this.data, this.extendData)
 
-          // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
-          // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
-          // console.log(this.data.links)
-          // console.log(this.data.nodes)
-          // this.data.links = this.data.links.push.apply(this.extendData.links)
-          // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
-          document.getElementById('graph').innerHTML = ''
-          document.getElementById('graphLegend').remove()
-          console.log(this.data)
-          this.drawGraph()
-        // setTimeout(this.drawGraph, 200);
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
+        // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+        // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+        // console.log(this.data.links)
+        // console.log(this.data.nodes)
+        // this.data.links = this.data.links.push.apply(this.extendData.links)
+        // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
+        document.getElementById('graph').innerHTML = ''
+        document.getElementById('graphLegend').remove()
+        console.log(this.data)
+        this.drawGraph()
+      })
+
+      // axios.post('http://localhost:8899/basic/extend', qs.stringify({
+      //   'name': nodeName
+      // }))
+      //   .then(response => {
+      //     const data = response.data.data
+      //     // console.log(JSON.parse(JSON.stringify(data)))
+      //     this.extendData = data
+      //     // console.log(this.extendData)
+      //     console.log(this.extendData)
+      //     console.log(this.data)
+      //     this.mergeTwoData(this.data, this.extendData)
+      //
+      //     // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+      //     // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+      //     // console.log(this.data.links)
+      //     // console.log(this.data.nodes)
+      //     // this.data.links = this.data.links.push.apply(this.extendData.links)
+      //     // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
+      //     document.getElementById('graph').innerHTML = ''
+      //     document.getElementById('graphLegend').remove()
+      //     console.log(this.data)
+      //     this.drawGraph()
+      //   // setTimeout(this.drawGraph, 200);
+      //   })
+      //   .catch(function(error) {
+      //     console.log(error)
+      //   })
     },
 
     mergeTwoData(data1, data2) {

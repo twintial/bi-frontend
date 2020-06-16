@@ -67,6 +67,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
+import { searchResource } from '@/api/esSearch'
 
 export default {
   components: { Pagination },
@@ -93,26 +94,30 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      console.log(this.label)
-      console.log(this.name)
-      this.$axios
-        .post(
-          'http://localhost:8899/search/resource/' +
-            this.base.page +
-            '/' +
-            this.base.limit,
-          {
-            name: this.name,
-            label: this.label
-          }
-        )
-        .then(response => {
-          this.list = response.data.data.results
-          this.total = parseInt(response.data.data.total)
-          console.log(this.list)
-          console.log(this.total)
-          this.listLoading = false
-        })
+      const data = { name: this.name, label: this.label }
+      searchResource(data, this.base.page, this.base.limit).then(response => {
+        this.list = response.data.results
+        this.total = parseInt(response.data.total)
+        this.listLoading = false
+      })
+      // this.$axios
+      //   .post(
+      //     'http://localhost:8899/search/resource/' +
+      //       this.base.page +
+      //       '/' +
+      //       this.base.limit,
+      //     {
+      //       name: this.name,
+      //       label: this.label
+      //     }
+      //   )
+      //   .then(response => {
+      //     this.list = response.data.data.results
+      //     this.total = parseInt(response.data.data.total)
+      //     console.log(this.list)
+      //     console.log(this.total)
+      //     this.listLoading = false
+      //   })
     },
 
     goTo(row) {
