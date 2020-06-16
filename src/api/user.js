@@ -16,6 +16,7 @@ export function getInfo(token) {
   })
 }
 
+// 不使用
 export function logout() {
   return request({
     url: '/vue-element-admin/user/logout',
