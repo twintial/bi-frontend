@@ -147,32 +147,50 @@ export default {
     }
   },
 
-  created(){
-    console.log("create", this.$route)
-    if(this.$route.params.length === 0){
+  created() {
+    console.log('create', this.$route)
+    if (this.$route.params.length === 0) {
       return
     }
     // 由 resource 搜索界面跳转而来
-    if(this.$route.params.node){
-      console.log("jump node", this.$route.params.node)
+    if (this.$route.params.node) {
+      console.log('jump node', this.$route.params.node)
       this.query_type = 'one'
       this.node1 = this.$route.params.node
-      this.direction = "false"
+      this.direction = 'false'
       searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
-          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
-          console.log(response)
-        })
+        linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+        const data = JSON.parse(JSON.stringify(response.data))
+        this.data = response.data
+        this.nodes = data.nodes
+        document.getElementById('graph').innerHTML = ''
+        try {
+          document.getElementById('graphLegend').remove()
+        } catch {
+          console.log('no graphLegend')
+        }
+        this.drawGraph()
+      })
 
     // 由 predicate 搜索界面跳转而来
-    }else if(this.$route.params.predicate){
-      console.log("jump predicate", this.$route.params.predicate)
+    } else if (this.$route.params.predicate) {
+      console.log('jump predicate', this.$route.params.predicate)
       this.query_type = 'one'
       this.predicate = this.$route.params.predicate
-      this.direction = "false"
+      this.direction = 'false'
       searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
-          linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
-          console.log(response)
-        })
+        linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+        const data = JSON.parse(JSON.stringify(response.data))
+        this.data = response.data
+        this.nodes = data.nodes
+        document.getElementById('graph').innerHTML = ''
+        try {
+          document.getElementById('graphLegend').remove()
+        } catch {
+          console.log('no graphLegend')
+        }
+        this.drawGraph()
+      })
     }
   },
 
@@ -211,7 +229,6 @@ export default {
       if (this.query_type === 'one') {
         searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
           linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
-          console.log(response.data)
           const data = JSON.parse(JSON.stringify(response.data))
           this.data = response.data
           this.nodes = data.nodes
