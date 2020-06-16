@@ -191,6 +191,25 @@ export default {
         }
         this.drawGraph()
       })
+    } else if (this.$route.params.object) {
+      console.log('jump node', this.$route.params.object)
+      this.query_type = 'one'
+      this.node1 = this.$route.params.object
+      this.predicate = 'product'
+      this.direction = 'false'
+      searchOne({ nodeName: this.node1, nodeLabel: this.label1, linkName: this.predicate,
+        linkLabel: this.prep_label, isUnidirectional: this.direction }).then(response => {
+        const data = JSON.parse(JSON.stringify(response.data))
+        this.data = response.data
+        this.nodes = data.nodes
+        document.getElementById('graph').innerHTML = ''
+        try {
+          document.getElementById('graphLegend').remove()
+        } catch {
+          console.log('no graphLegend')
+        }
+        this.drawGraph()
+      })
     }
   },
 

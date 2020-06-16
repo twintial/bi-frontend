@@ -6,3 +6,10 @@ export function getFoundation() {
     method: 'get'
   })
 }
+
+export function getProducts() {
+  return request({
+    url: '/business/products',
+    method: 'get'
+  })
+}

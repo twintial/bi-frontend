@@ -68,16 +68,16 @@ export const constantRoutes = [
     component: Layout,
     meta: { title: 'BICase', icon: 'skill' },
     children: [{
-      path: 'location',
-      name: 'BICase',
-      component: () => import('@/views/bicase/location'),
-      meta: { title: 'Location', icon: 'eye' }
-    },
-    {
       path: 'product',
       name: 'BICase',
       component: () => import('@/views/bicase/product'),
-      meta: { title: 'Product', icon: 'skill' }
+      meta: { title: 'Product', icon: 'eye' }
+    },
+    {
+      path: 'location',
+      name: 'BICase',
+      component: () => import('@/views/bicase/location'),
+      meta: { title: 'Location', icon: 'skill' }
     }]
   },
   // {

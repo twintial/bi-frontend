@@ -1,12 +1,14 @@
 <template>
   <div class="chart-container">
-    <div :id="id" :class="className" :style="{height:height,width:width}" />
+    <div :id="id" ref="myEchart" :class="className" :style="{height:height,width:width}" />
   </div>
 </template>
 
 <script>
 import echarts from 'echarts'
-import resize from './mixins/resize'
+import 'echarts/map/js/world.js'
+import resize from '@/components/chart/mixins/resize'
+import { getFoundation } from '@/api/business'
 
 export default {
   mixins: [resize],
@@ -30,11 +32,17 @@ export default {
   },
   data() {
     return {
-      chart: null
+      data: []
     }
   },
   mounted() {
-    this.initChart()
+    this.chart = echarts.init(this.$refs.myEchart)
+    this.chart.showLoading()
+    getFoundation().then(response => {
+      this.data = response.data
+      this.initChart()
+    })
+    // this.chinaConfigure();
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -45,116 +53,81 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(document.getElementById(this.id))
-
-      const xAxisData = []
-      const data = []
-      const data2 = []
-      for (let i = 0; i < 50; i++) {
-        xAxisData.push(i)
-        data.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5)
-        data2.push((Math.sin(i / 5) * (i / 5 + 10) + i / 6) * 3)
+      const option1 = {
+        backgroundColor: '#404a59',
+        title: {
+          text: '各国的互联网企业数量',
+          left: 'center',
+          top: 'top',
+          textStyle: {
+            fontSize: 25,
+            color: 'rgba(255,255,255, 0.9)'
+          }
+        },
+        dataRange: {
+          show: false,
+          min: this.data[this.data.length - 1].value,
+          max: this.data[0].value,
+          text: ['High', 'Low'],
+          realtime: true,
+          calculable: true,
+          color: ['orangered', 'yellow', 'lightskyblue']
+        },
+        tooltip: {
+          formatter: function(params) {
+            return params.data.name + ': ' + params.data.value
+          }
+        },
+        geo: {
+          map: 'world',
+          label: {
+            emphasis: {
+              show: false
+            }
+          },
+          roam: false,
+          silent: true
+        },
+        series: [
+          {
+            type: 'map',
+            mapType: 'world',
+            // zoom: 1.2,
+            mapLocation: {
+              y: 100
+            },
+            data: this.data,
+            symbolSize: 12,
+            label: {
+              normal: {
+                show: false
+              },
+              emphasis: {
+                show: false
+              }
+            },
+            itemStyle: {
+              normal: {
+                areaColor: '#323c48',
+                borderColor: '#404a59'
+              },
+              emphasis: {
+                label: {
+                  show: true
+                },
+                areaColor: 'rgba(255,255,255, 0.5)'
+              }
+            }
+          }
+        ]
       }
-      this.chart.setOption({
-        backgroundColor: '#08263a',
-        grid: {
-          left: '5%',
-          right: '5%'
-        },
-        xAxis: [{
-          show: false,
-          data: xAxisData
-        }, {
-          show: false,
-          data: xAxisData
-        }],
-        visualMap: {
-          show: false,
-          min: 0,
-          max: 50,
-          dimension: 0,
-          inRange: {
-            color: ['#4a657a', '#308e92', '#b1cfa5', '#f5d69f', '#f5898b', '#ef5055']
-          }
-        },
-        yAxis: {
-          axisLine: {
-            show: false
-          },
-          axisLabel: {
-            textStyle: {
-              color: '#4a657a'
-            }
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#08263f'
-            }
-          },
-          axisTick: {
-            show: false
-          }
-        },
-        series: [{
-          name: 'back',
-          type: 'bar',
-          data: data2,
-          z: 1,
-          itemStyle: {
-            normal: {
-              opacity: 0.4,
-              barBorderRadius: 5,
-              shadowBlur: 3,
-              shadowColor: '#111'
-            }
-          }
-        }, {
-          name: 'Simulate Shadow',
-          type: 'line',
-          data,
-          z: 2,
-          showSymbol: false,
-          animationDelay: 0,
-          animationEasing: 'linear',
-          animationDuration: 1200,
-          lineStyle: {
-            normal: {
-              color: 'transparent'
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: '#08263a',
-              shadowBlur: 50,
-              shadowColor: '#000'
-            }
-          }
-        }, {
-          name: 'front',
-          type: 'bar',
-          data,
-          xAxisIndex: 1,
-          z: 3,
-          itemStyle: {
-            normal: {
-              barBorderRadius: 5
-            }
-          }
-        }],
-        animationEasing: 'elasticOut',
-        animationEasingUpdate: 'elasticOut',
-        animationDelay(idx) {
-          return idx * 20
-        },
-        animationDelayUpdate(idx) {
-          return idx * 20
-        }
-      })
+      this.chart.hideLoading()
+      this.chart.setOption(option1)
     }
   }
 }
 </script>
+
 <style scoped>
   .chart-container{
     position: relative;
@@ -162,4 +135,3 @@ export default {
     height: calc(100vh);
   }
 </style>
-
