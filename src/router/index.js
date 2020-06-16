@@ -86,11 +86,11 @@ export const constantRoutes = [
       meta: { title: 'Analysis', icon: 'dashboard' }
     }]
   },
-  // {
-  //   path: '/login',
-  //   component: () => import('@/views/login/index'),
-  //   hidden: true
-  // },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
 
   {
     path: '/404',

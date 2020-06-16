@@ -21,3 +21,11 @@ export function searchTwo(data) {
     data: JSON.stringify(data)
   })
 }
+
+export function extend(name) {
+  return request({
+    url: '/basic/extend',
+    method: 'post',
+    params: { name }
+  })
+}

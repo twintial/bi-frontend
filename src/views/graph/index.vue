@@ -111,7 +111,7 @@
 import * as d3 from 'd3'
 import qs from 'qs'
 import axios from 'axios'
-import { searchOne, searchTwo } from '@/api/search'
+import { searchOne, searchTwo, extend } from '@/api/search'
 import { getResource, getPredicate } from '@/api/label'
 
 export default {
@@ -466,33 +466,54 @@ export default {
     },
 
     redrawGraph(nodeName) {
-      axios.post('http://localhost:8899/basic/extend', qs.stringify({
-        'name': nodeName
-      }))
-        .then(response => {
-          const data = response.data.data
-          // console.log(JSON.parse(JSON.stringify(data)))
-          this.extendData = data
-          // console.log(this.extendData)
-          console.log(this.extendData)
-          console.log(this.data)
-          this.mergeTwoData(this.data, this.extendData)
+      extend(nodeName).then(response => {
+        const data = response.data
+        // console.log(JSON.parse(JSON.stringify(data)))
+        this.extendData = data
+        // console.log(this.extendData)
+        console.log(this.extendData)
+        console.log(this.data)
+        this.mergeTwoData(this.data, this.extendData)
 
-          // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
-          // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
-          // console.log(this.data.links)
-          // console.log(this.data.nodes)
-          // this.data.links = this.data.links.push.apply(this.extendData.links)
-          // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
-          document.getElementById('graph').innerHTML = ''
-          document.getElementById('graphLegend').remove()
-          console.log(this.data)
-          this.drawGraph()
-        // setTimeout(this.drawGraph, 200);
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
+        // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+        // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+        // console.log(this.data.links)
+        // console.log(this.data.nodes)
+        // this.data.links = this.data.links.push.apply(this.extendData.links)
+        // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
+        document.getElementById('graph').innerHTML = ''
+        document.getElementById('graphLegend').remove()
+        console.log(this.data)
+        this.drawGraph()
+      })
+
+      // axios.post('http://localhost:8899/basic/extend', qs.stringify({
+      //   'name': nodeName
+      // }))
+      //   .then(response => {
+      //     const data = response.data.data
+      //     // console.log(JSON.parse(JSON.stringify(data)))
+      //     this.extendData = data
+      //     // console.log(this.extendData)
+      //     console.log(this.extendData)
+      //     console.log(this.data)
+      //     this.mergeTwoData(this.data, this.extendData)
+      //
+      //     // this.data.links = this.processLink(this.data.links.concat(this.extendData.links))
+      //     // this.data.nodes = this.processNode(this.data.nodes.concat(this.extendData.nodes))
+      //     // console.log(this.data.links)
+      //     // console.log(this.data.nodes)
+      //     // this.data.links = this.data.links.push.apply(this.extendData.links)
+      //     // this.data.nodes = this.data.nodes.push.apply(this.extendData.nodes)
+      //     document.getElementById('graph').innerHTML = ''
+      //     document.getElementById('graphLegend').remove()
+      //     console.log(this.data)
+      //     this.drawGraph()
+      //   // setTimeout(this.drawGraph, 200);
+      //   })
+      //   .catch(function(error) {
+      //     console.log(error)
+      //   })
     },
 
     mergeTwoData(data1, data2) {

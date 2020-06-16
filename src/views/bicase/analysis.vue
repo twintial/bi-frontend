@@ -20,7 +20,7 @@
         </el-button>
       </div>
     </center>
-    
+
     <br>
     <!-- <div>tween-num: {{ numTween }}</div> -->
     <center id="score" style="display: none">
@@ -31,13 +31,15 @@
       </div>
       <div class="chartNum">
         <div class="box-item">
-          <li :class="{'number-item': !isNaN(item), 'mark-item': isNaN(item) }"
+          <li
             v-for="(item,index) in orderNum"
-            :key="index">
-              <span v-if="!isNaN(item)">
-                <i ref="numberItem">0123456789</i>
-              </span>
-            <span class="comma" v-else>{{ item }}</span>
+            :key="index"
+            :class="{'number-item': !isNaN(item), 'mark-item': isNaN(item) }"
+          >
+            <span v-if="!isNaN(item)">
+              <i ref="numberItem">0123456789</i>
+            </span>
+            <span v-else class="comma">{{ item }}</span>
           </li>
         </div>
       </div>
@@ -45,13 +47,13 @@
     <br>
 
     <el-table
+      id="service"
       v-loading="listLoading"
       :data="service"
       border
       fit
       highlight-current-row
       style="width: 60%;margin: auto;display: none"
-      id="service"
     >
       <el-table-column label="Service" min-width="300px" align="center">
         <template slot-scope="{ row }">
@@ -67,13 +69,13 @@
     <br>
 
     <el-table
+      id="product"
       v-loading="listLoading"
       :data="product"
       border
       fit
       highlight-current-row
       style="width: 60%;margin: auto;display: none"
-      id="product"
     >
       <el-table-column label="Product" min-width="300px" align="center">
         <template slot-scope="{ row }">
@@ -92,18 +94,16 @@
 import Pagination from '@/components/Pagination'
 import TWEEN from '@tweenjs/tween.js'
 import { getCompany, getDetails } from '@/api/analysis'
-import circleProgressbar from 'vue-circleprogressbar'
+// import circleProgressbar from 'vue-circleprogressbar'
 
 export default {
-  components: { 
+  components: {
     Pagination
   },
   data() {
     return {
       orderNum: ['0', '0', '0'],
       listLoading: false,
-      num: 0,
-      numTween: 0,
       prep_label: undefined,
       prep_options: [],
       service: undefined,
@@ -118,30 +118,10 @@ export default {
       }
     })
   },
-  watch: {
-    num (newValue, oldValue) {
-      new TWEEN.Tween({
-        number: oldValue
-      })
-      .to({
-        number: newValue
-      }, 3500)
-      .onUpdate(tween => {
-        this.numTween = tween.number.toFixed(0)
-      })
-      .start()
-      function animate() {
-        if (TWEEN.update()) {
-          requestAnimationFrame(animate);
-        }
-      }
-      animate()
-    }
-  },
   methods: {
 
     // 设置文字滚动
-    setNumberTransform () {
+    setNumberTransform() {
       const numberItems = this.$refs.numberItem
       const numberArr = this.orderNum.filter(item => !isNaN(item))
       console.log(numberItems)
@@ -179,7 +159,7 @@ export default {
         this.toOrderNum(this.num)
         this.listLoading = false
       })
-    },
+    }
   }
 }
 </script>
