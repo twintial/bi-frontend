@@ -64,29 +64,6 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/biCase',
-    component: Layout,
-    meta: { title: 'BICase', icon: 'skill' },
-    children: [{
-      path: 'product',
-      name: 'BICase',
-      component: () => import('@/views/bicase/product'),
-      meta: { title: 'Product', icon: 'eye' }
-    },
-    {
-      path: 'location',
-      name: 'BICase',
-      component: () => import('@/views/bicase/location'),
-      meta: { title: 'Location', icon: 'skill' }
-    },
-    {
-      path: 'analysis',
-      name: 'BICase',
-      component: () => import('@/views/bicase/analysis'),
-      meta: { title: 'Analysis', icon: 'dashboard' }
-    }]
-  },
-  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -96,7 +73,7 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
+  }
 
   // {
   //   path: '/',
@@ -215,6 +192,32 @@ export const constantRoutes = [
   // },
 
   // 404 page must be placed at the end !!!
+]
+
+export const asyncRoutes = [
+  {
+    path: '/biCase',
+    component: Layout,
+    meta: { title: 'BICase', icon: 'skill', roles: ['admin'] },
+    children: [{
+      path: 'product',
+      name: 'BICase',
+      component: () => import('@/views/bicase/product'),
+      meta: { title: 'Product', icon: 'eye' }
+    },
+    {
+      path: 'location',
+      name: 'BICase',
+      component: () => import('@/views/bicase/location'),
+      meta: { title: 'Location', icon: 'skill' }
+    },
+    {
+      path: 'analysis',
+      name: 'BICase',
+      component: () => import('@/views/bicase/analysis'),
+      meta: { title: 'Analysis', icon: 'dashboard' }
+    }]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

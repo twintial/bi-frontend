@@ -240,9 +240,9 @@ export default {
     },
 
     search() {
-      this.$message({
-        message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction
-      })
+      // this.$message({
+      //   message: this.node1 + ' and ' + this.node2 + ' and ' + this.query_type + ' and ' + this.direction
+      // })
 
       // 单节点查询
       if (this.query_type === 'one') {
@@ -258,6 +258,9 @@ export default {
             console.log('no graphLegend')
           }
           this.drawGraph()
+          this.$message({
+            message: 'search success'
+          })
         })
 
       // 双节点查询
@@ -274,6 +277,9 @@ export default {
             console.log('no graphLegend')
           }
           this.drawGraph()
+          this.$message({
+            message: 'search success'
+          })
         })
 
       // 未选择类型

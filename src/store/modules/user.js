@@ -1,12 +1,13 @@
-import {getInfo, login} from '@/api/user'
-import {getToken, removeToken, setToken} from '@/utils/auth'
-import {resetRouter} from "@/router";
+import { getInfo, login } from '@/api/user'
+import { getToken, removeToken, setToken } from '@/utils/auth'
+import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    role: ''
   }
 }
 
@@ -54,7 +55,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        commit('SET_NAME', data)
+        commit('SET_NAME', data.username)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -67,6 +68,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       removeToken()
       resetRouter()
+      commit('RESET_STATE')
       state.token = null
       resolve()
       // logout(state.token).then(() => {
