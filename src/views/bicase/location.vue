@@ -74,6 +74,10 @@ export default {
           color: ['orangered', 'yellow', 'lightskyblue']
         },
         tooltip: {
+          formatter: function(params) {
+            const value = isNaN(params.value) ? 0 : params.value
+            return params.name + ':' + value
+          }
         },
         geo: {
           map: 'world',
